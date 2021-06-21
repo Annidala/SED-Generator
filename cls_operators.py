@@ -175,12 +175,12 @@ class SymbolicTensors():
           False  the tensor is non-symmetric and therefore written in Cartesian
     Init returns:
     C : a symbolic Matrix of shape in 6x1 or 3x3.
-    Methods include the computation of invariants, inverse and deviatoric 
+    Methods include the computation of invariants, inverse and isochororic 
     tensors.
     '''
-    def __init__(self, sym = False, deviat = True):
+    def __init__(self, sym = False, isochor = True):
         self.sym = sym
-        self.deviat = deviat
+        self.isochor = isochor
         (self.c11, self.c22, self.c33, 
             self.c23, self.c13, self.c12, 
             self.c32, self.c31, self.c21) = sy.symbols(
@@ -219,7 +219,7 @@ class SymbolicTensors():
         else:
             trace = sy.trace(self.C)
 
-        if self.deviat:
+        if self.isochor:
             trace = (self.I3())**sy.Rational(-1,3)*trace
         return trace
     
@@ -229,7 +229,7 @@ class SymbolicTensors():
                                    sy.trace(self.sym_index_tensor()**2))
         else:
             I2 = sy.Rational(1,2)*(sy.trace(self.C)**2 - sy.trace(self.C**2))
-        if self.deviat:
+        if self.isochor:
             I2 = I2*(self.I3())**sy.Rational(-2,3)        
         return I2
     
@@ -249,5 +249,5 @@ class SymbolicTensors():
             inver = self.C.inv('LU')
         return inver
     
-    def deviat_tensor(self):
+    def isochoric_tensor(self):
         return self.I3()**(sy.Rational(-1,3))*self.C

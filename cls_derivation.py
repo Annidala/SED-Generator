@@ -7,7 +7,7 @@ import cls_operators as co
 
 
 class MakeMechanicalTensors():
-    def __init__(self, params, sym = False, deviat = True):
+    def __init__(self, params, sym = False, isochor = True):
         self.params = params
         self.sym = sym
         self.SD = cde.SymbolicDensities(self.params, self.sym)
@@ -46,24 +46,22 @@ class MakeMechanicalTensors():
                          otypes = [np.ndarray])
         return e, f, g
 
-    def cpp_function(self, name =  {'dens': 'dens', 
-                                    'stress':'pk2',
-                                    'tangent_matrix':'tcm'}):
+    def cpp_function(self):
         '''
         Returns C++ functions of the density, pk2 stress and tangent matrix
         Args:
         Optional : dict of filename for the dens, stress and tangent_matrix
         '''
-        d = codegen((name, self.SD.density), 
+        d = codegen(("dens", self.SD.density), 
                                        language = "C99", 
-                                       prefix = name['dens'], 
+                                       prefix = 'dens', 
                                        to_files = True, 
                                        header = False, 
                                        empty = True
                                        ) 
         pk2 = codegen(('PK2stress', self.stress_tensor()), 
                                        language = "C99", 
-                                       prefix = name['stress'], 
+                                       prefix = 'stress', 
                                        to_files = True, 
                                        header = False, 
                                        empty = True) 
@@ -71,7 +69,7 @@ class MakeMechanicalTensors():
         tcm = codegen(
                 ('tangent_matrix', sy.Matrix((self.tangent_matrix())[:,0,:,0])), 
                                         language = "C99", 
-                                        prefix = name['tangent matrix'], 
+                                        prefix = 'tangent matrix', 
                                         to_files = True, 
                                         header = False, 
                                         empty = True) 
