@@ -24,10 +24,10 @@ class SymbolicDensities():
     '''
     def __init__(self, params, sym = False, deviat = True):
         self.sym = sym
-        self.deviat = deviat
+        self.isochor = deviat
         self.model = params['dens']
         self.coeffs = params['coeffs']
-        self.tens = co.SymbolicTensors(self.sym, self.deviat)
+        self.tens = co.SymbolicTensors(self.sym, self.isochor)
         self.density = self.make_density()
         
     def make_density(self):
@@ -77,8 +77,8 @@ class SymbolicDensities():
         # kelvin projectors - preferably choose only deviatoric projectors
         vaps = np.array([l1, l2, l3, l4, l5])
         vapp = vaps/np.sum(vaps, axis = 0)
-        if self.deviat:
-            E = 1/2*(self.tens.deviat_tensor() - sy.Matrix([1, 1, 1, 0, 0, 0]))
+        if self.isochor:
+            E = 1/2*(self.tens.isochoric_tensor() - sy.Matrix([1, 1, 1, 0, 0, 0]))
         else:
             E = 1/2*(self.tens.C - sy.Matrix([1, 1, 1, 0, 0, 0]))
         W = 0
@@ -102,8 +102,8 @@ class SymbolicDensities():
         '''
         c, N, r1, r2, theta = self.coeffs['c'], self.coeffs['N'], self.coeffs[
             'r1'], self.coeffs['r2'], self.coeffs['foe_theta']
-        if self.deviat:
-            E = 1/2*(self.tens.deviat_tensor() - sy.Matrix([1, 1, 1, 0, 0, 0]))
+        if self.isochor:
+            E = 1/2*(self.tens.isochoric_tensor() - sy.Matrix([1, 1, 1, 0, 0, 0]))
         else:
             E = 1/2*(self.tens.C - sy.Matrix([1, 1, 1, 0, 0, 0]))
         W = 0
@@ -118,8 +118,8 @@ class SymbolicDensities():
         k1, k2, theta = self.coeffs['k1'], self.coeffs['k2'
             ], self.coeffs['hgo_theta']
         W = 0
-        if self.deviat:
-            c = self.tens.deviat_tensor()
+        if self.isochor:
+            c = self.tens.isochoric_tensor()
         else:
             c = self.tens.C
         for i, k in enumerate(k1):
