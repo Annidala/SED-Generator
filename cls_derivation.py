@@ -46,7 +46,7 @@ class MakeMechanicalTensors():
                          otypes = [np.ndarray])
         return e, f, g
 
-    def cpp_function(self):
+    def cpp_function(self, name ={'dens':'densite', 'PK2':'PK2stress', 'tcm':'Elas_tensor'}):
         '''
         Returns C++ functions of the density, pk2 stress and tangent matrix
         Args:
@@ -54,14 +54,14 @@ class MakeMechanicalTensors():
         '''
         d = codegen(("dens", self.SD.density), 
                                        language = "C99", 
-                                       prefix = 'dens', 
+                                       prefix = name['dens'], 
                                        to_files = True, 
                                        header = False, 
                                        empty = True
                                        ) 
         pk2 = codegen(('PK2stress', self.stress_tensor()), 
                                        language = "C99", 
-                                       prefix = 'stress', 
+                                       prefix = name['PK2'], 
                                        to_files = True, 
                                        header = False, 
                                        empty = True) 
@@ -69,7 +69,7 @@ class MakeMechanicalTensors():
         tcm = codegen(
                 ('tangent_matrix', sy.Matrix((self.tangent_matrix())[:,0,:,0])), 
                                         language = "C99", 
-                                        prefix = 'tangent matrix', 
+                                        prefix = name['tcm'], 
                                         to_files = True, 
                                         header = False, 
                                         empty = True) 
